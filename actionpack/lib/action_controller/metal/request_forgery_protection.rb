@@ -285,12 +285,18 @@ module ActionController #:nodoc:
       # * Does the form_authenticity_token match the given token value from the params?
       # * Does the X-CSRF-Token header match the form_authenticity_token?
       def verified_request? # :doc:
+        logger.warn "********** checking verified request START"
+        logger.warn(protect_against_forgery?: protect_against_forgery?,
+                    valid_request_origin?: valid_request_origin?,
+                    any_authenticity_token_valid?: any_authenticity_token_valid?)
         !protect_against_forgery? || request.get? || request.head? ||
           (valid_request_origin? && any_authenticity_token_valid?)
+        logger.warn "********** checking verified request END"
       end
 
       # Checks if any of the authenticity tokens from the request are valid.
       def any_authenticity_token_valid? # :doc:
+        logger.warn(nr_of_tokens: request_authenticity_tokens.size)
         request_authenticity_tokens.any? do |token|
           valid_authenticity_token?(session, token)
         end
